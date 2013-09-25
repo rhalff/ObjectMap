@@ -51,6 +51,16 @@ ObjectMap.prototype.set = function(obj, keys) {
 
 };
 
+// 
+// map.get(['ports', 'input'])
+//
+//  is the same as:
+//
+// map.ports.input
+// map['ports']['input']
+//
+// So not sure if the getter is needed at all.
+//
 ObjectMap.prototype.get = function(keys, id) {
 
   var i, what;
@@ -85,6 +95,25 @@ ObjectMap.prototype.get = function(keys, id) {
 
 };
 
+/**
+ *
+ * [
+ *  "input",
+ *  ["ports", "input"],
+ *  ["ports", "output"]
+ * ] 
+ *
+ */
+ObjectMap.prototype.map = function(mapDef) {
+
+}
+
+// implement remove
+// also allow setup of these maps.
+// in your project, you first define the maps maybe
+// instead of adding on the fly. this way the map is 
+// really structured, and adding an unknown kind of map
+// forces you to first define it. Runtime typechecking kind of thing
 ObjectMap.prototype.remove = function(obj) {
 
   // clean up
