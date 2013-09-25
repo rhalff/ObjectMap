@@ -60,6 +60,7 @@ ObjectMap.prototype.set = function(obj, keys) {
 // map['ports']['input']
 //
 // So not sure if the getter is needed at all.
+// Only needed for testing purpose and object removal
 //
 ObjectMap.prototype.get = function(keys, id) {
 
