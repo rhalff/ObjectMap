@@ -1,0 +1,20 @@
+{
+  "name": "objectmap",
+  "description": "ObjectMap",
+  "author": "Rob Halff <rob.halff@gmail.com>",
+  "version": "0.0.2",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/rhalff/ObjectMap/raw/master/LICENSE"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rhalff/ObjectMap.git"
+  },
+  "engines": {
+    "node": ">=0.6.0"
+  },
+  "main": "main"
+}
