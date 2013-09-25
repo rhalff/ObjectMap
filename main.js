@@ -2,7 +2,7 @@
 
 function ObjectMap(key) {
   this._key    = key || 'id';
-  this._objMap = {};   // not sure if this is needed anymore now, can be mimiced with .set(obj, 'id');
+  this._objMap = {};   // id/object map
   this._keyMap = [];   // Keep track of the `paths` to the keys
   this._register = {}; // points to the indices of the _keyMap
 }
