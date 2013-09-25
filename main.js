@@ -1,5 +1,4 @@
 
-
 function ObjectMap(key) {
   this._key    = key || 'id';
   this._objMap = {};   // id/object map
@@ -155,8 +154,8 @@ ObjectMap.prototype.set = function(obj, keys) {
 // map.ports.input
 // map['ports']['input']
 //
-// So not sure if the getter is needed at all.
-// Only needed for testing purpose and object removal
+// so the usefulness of this method is yet unknown, but let's just keep it :-)
+// maybe executing functions along the way while traversing or something
 //
 ObjectMap.prototype.get = function(keys, id) {
 
@@ -196,16 +195,3 @@ ObjectMap.prototype.get = function(keys, id) {
   }
 
 };
-
-/**
- *
- * [
- *  "input",
- *  ["ports", "input"],
- *  ["ports", "output"]
- * ] 
- *
- */
-ObjectMap.prototype.map = function(mapDef) {
-
-}
