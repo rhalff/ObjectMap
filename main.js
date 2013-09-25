@@ -2,18 +2,109 @@
 
 function ObjectMap(key) {
   this._key    = key || 'id';
-  this._objMap = {};
+  this._objMap = {};   // not sure if this is needed anymore now, can be mimiced with .set(obj, 'id');
+  this._keyMap = [];   // Keep track of the `paths` to the keys
+  this._register = {}; // points to the indices of the _keyMap
 }
 
 module.exports = ObjectMap;
 
+ObjectMap.prototype._mapKey = function(keys, obj) {
+
+  // remember key
+  idx = this._keyMap.indexOf(keys.toString()); 
+  if(idx === -1) {
+    this._keyMap.push(keys.toString());
+    // push returns a position, but if an array was modified it's not really the current position
+    idx = this._keyMap.indexOf(keys.toString()); 
+  }
+
+  if(!this._register[obj[this._key]]) this._register[obj[this._key]] = [];
+  if(this._register[obj[this._key]].indexOf(idx) === -1) this._register[obj[this._key]].push(idx);
+
+  return idx;
+
+};
+
+/*
+ *
+ * {
+ *   _key: 'id',
+ *   _objMap: { '1': { id: 1, nothing: 'special' } },
+ *   _keyMap: [ 'input', 'ports,input', 'ports,output' ],
+ *   _register: { '1': [ 1, 2, 3 ] },
+ *   input: { '1': { id: 1, nothing: 'special' } },
+ *   ports: { input: { '1': [Object] }, output: { '1': [Object] } }
+ * }
+ *
+ */
+ObjectMap.prototype.remove = function(obj) {
+
+   for(i = 0; i < this._register[obj[this._key]].length; i++) {
+      var idx = this._register[obj[this._key]][i];
+      if(this._keyMap[idx]) {
+        var keys = this._keyMap[idx].split(',');
+        this._remove(keys, obj);
+
+      } else {
+        throw new Error("_keyMap: no such index " + idx);
+      }
+   }
+
+   // cleanup
+   delete this._objMap[obj.id]; 
+   delete this._register[obj.id]; 
+
+};
+
+// removes only a single reference
+//
+// usage:
+//     ._remove("input", obj);
+//     ._remove(["ports","input"], obj);
+//
+ObjectMap.prototype._remove = function(keys, obj) {
+
+  var what, i, idx;
+
+  // do not do any checking, let javascript just bail out 
+  if(typeof keys === "string") {
+
+      // unset value
+      delete this[keys][obj[this._key]];
+
+  } else {
+    // create the nested  key structure if it doesn't exist yet.
+    // note: this.input = []; this.input.key = [] should throw an error
+    //       it will by default actually.
+    for(i = 0; i < keys.length; i++) {
+
+      if(!what) what = this;  // root
+
+      what = what[keys[i]];
+
+      // set value
+      if(keys.length === (i + 1)) {
+
+        delete what[obj[this._key]];
+
+      }
+
+    }
+
+  }
+
+};
+
 ObjectMap.prototype._init = function(keys, obj) {
 
-  var what, i;
+  var what, i, idx;
 
   if(typeof keys === "string") {
 
       if(!this.hasOwnProperty(keys)) this[keys] = {};
+
+      this._mapKey(keys, obj);
 
       // set value
       this[keys][obj[this._key]] = obj; 
@@ -32,6 +123,9 @@ ObjectMap.prototype._init = function(keys, obj) {
 
       // set value
       if(keys.length === (i + 1)) {
+
+       this._mapKey(keys, obj);
+
         what[obj[this._key]] = obj;
       }
 
@@ -71,10 +165,6 @@ ObjectMap.prototype.get = function(keys, id) {
   if(typeof keys === "string") {
 
     if(id) {
-      if(!this[keys][id]) {
-        // fail hard, we must be able to trust the map
-        throw new Error("Object is unknown");
-      }
       return this[keys][id];
     } else {
       return this[keys];
@@ -119,15 +209,3 @@ ObjectMap.prototype.get = function(keys, id) {
 ObjectMap.prototype.map = function(mapDef) {
 
 }
-
-// implement remove
-// also allow setup of these maps.
-// in your project, you first define the maps maybe
-// instead of adding on the fly. this way the map is 
-// really structured, and adding an unknown kind of map
-// forces you to first define it. Runtime typechecking kind of thing
-ObjectMap.prototype.remove = function(obj) {
-
-  // clean up
-
-};
